@@ -1,0 +1,1099 @@
+---
+openapi: 3.0.0
+paths:
+  "/quotes/payins":
+    post:
+      operationId: QuotesController_createPayins
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateQuotesPayinsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateQuotesResponseDto"
+      security:
+        - bearer: []
+      summary: Create a payin quote
+      tags:
+        - Quotes
+  "/quotes/payouts":
+    post:
+      operationId: QuotesController_createPayouts
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateQuotesPayoutsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateQuotesResponseDto"
+      security:
+        - bearer: []
+      summary: Create a payout quote
+      tags:
+        - Quotes
+  "/payins":
+    post:
+      operationId: PayinsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreatePayinsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreatePayinsResponseDto"
+      security:
+        - bearer: []
+      summary: Create a payin
+      tags:
+        - Payins
+  "/payouts":
+    post:
+      operationId: PayoutsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreatePayoutsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreatePayoutsResponseDto"
+      security:
+        - bearer: []
+      summary: Create a payout
+      tags:
+        - Payouts
+  "/receivers":
+    post:
+      operationId: ReceiversController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateReceiversDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateReceiversResponseDto"
+      security:
+        - bearer: []
+      summary: Create a receiver
+      tags:
+        - Receivers
+    get:
+      operationId: ReceiversController_readAll
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ReadReceiversResponseDto"
+      security:
+        - bearer: []
+      summary: Read all receivers
+      tags:
+        - Receivers
+  "/receivers/{receiverId}/wallets":
+    post:
+      operationId: ReceiversController_registerWallets
+      parameters:
+        - name: receiverId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RegisterWalletsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RegisterWalletsResponseDto"
+      security:
+        - bearer: []
+      summary: Register a wallet
+      tags:
+        - Receivers
+    get:
+      operationId: ReceiversController_readAllWallets
+      parameters:
+        - name: receiverId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ReadAllWalletsResponseDto"
+      security:
+        - bearer: []
+      summary: Read all wallets
+      tags:
+        - Receivers
+  "/receivers/{receiverId}/bank-accounts":
+    post:
+      operationId: ReceiversController_createBankAccounts
+      parameters:
+        - name: receiverId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateBankAccountsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateBankAccountsResponseDto"
+      security:
+        - bearer: []
+      summary: Create a bank account
+      tags:
+        - Receivers
+    get:
+      operationId: ReceiversController_readAllBankAccounts
+      parameters:
+        - name: receiverId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ReadAllBankAccountsResponseDto"
+      security:
+        - bearer: []
+      summary: Read all bank accounts
+      tags:
+        - Receivers
+info:
+  title: Extensions Payment API
+  description: The Extensions Payment API description
+  version: "1.0"
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    CreateQuotesPayinsDto:
+      type: object
+      properties:
+        walletId:
+          type: string
+          example: ba_000000000000
+        amount:
+          type: number
+          minimum: 100
+          example: 1000
+        network:
+          type: string
+          example: Base
+          enum:
+            - Base
+            - Arbitrum
+            - Polygon
+            - Ethereum
+        token:
+          type: string
+          example: USDC
+          enum:
+            - USDC
+            - USDX
+      required:
+        - walletId
+        - amount
+        - network
+        - token
+    ContractDto:
+      type: object
+      properties:
+        Address:
+          type: string
+          example: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+        amount:
+          type: string
+          example: "1000000000000000000"
+      required:
+        - Address
+        - amount
+    CreateQuotesResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: qu_000000000000
+        expiresAt:
+          type: number
+          example: 1712958191
+        commercialQuotation:
+          type: number
+          example: 495
+        lumxQuotation:
+          type: number
+          example: 485
+        receiverAmount:
+          type: number
+          example: 5240
+        senderAmount:
+          type: number
+          example: 1010
+        flatFee:
+          type: number
+          example: 50
+        contract:
+          example:
+            address: "0x5E74A480F330705640ED07E870F893e72238c8d0"
+            amount: "10000000000000000000"
+            network:
+              name: Base
+              chainId: 84532
+            token:
+              name: USDC
+              address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+          allOf:
+            - "$ref": "#/components/schemas/ContractDto"
+      required:
+        - id
+        - expiresAt
+        - commercialQuotation
+        - lumxQuotation
+        - receiverAmount
+        - senderAmount
+        - flatFee
+        - contract
+    CreateQuotesPayoutsDto:
+      type: object
+      properties:
+        bankAccountId:
+          type: string
+          example: ba_000000000000
+        amount:
+          type: number
+          minimum: 100
+          example: 1000
+        network:
+          type: string
+          example: Base
+          enum:
+            - Base
+            - Arbitrum
+            - Polygon
+            - Ethereum
+        token:
+          type: string
+          example: USDC
+          enum:
+            - USDC
+            - USDX
+      required:
+        - bankAccountId
+        - amount
+        - network
+        - token
+    CreatePayinsDto:
+      type: object
+      properties:
+        quoteId:
+          type: string
+          example: qu_000000000000
+      required:
+        - quoteId
+    CreatePayinsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: pa_000000000000
+        status:
+          type: string
+          enum:
+            - processing
+            - failed
+            - refunded
+            - completed
+          example: processing
+        pixCode:
+          type: string
+          example: "12345678"
+      required:
+        - id
+        - status
+        - pixCode
+    CreatePayoutsDto:
+      type: object
+      properties:
+        quoteId:
+          type: string
+          example: qu_000000000000
+        senderWalletAddress:
+          type: string
+          example: "0x176F54c87492c5C38B2c9Ca5b8ea50e71bA8E5C8"
+      required:
+        - quoteId
+        - senderWalletAddress
+    CreatePayoutsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: pa_000000000000
+        status:
+          type: string
+          enum:
+            - processing
+            - failed
+            - refunded
+            - completed
+          example: processing
+        senderWalletAddress:
+          type: string
+          example: 0x123...890
+      required:
+        - id
+        - status
+        - senderWalletAddress
+    CreateReceiversDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - individual
+            - business
+          example: individual
+        kycLevel:
+          type: string
+          enum:
+            - light
+            - standard
+          example: light
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        taxId:
+          type: string
+          example: "10210274029"
+        legalName:
+          type: string
+          example: Company Name Inc.
+        email:
+          type: string
+          example: email@example.com
+        country:
+          type: string
+          enum:
+            - AF
+            - AL
+            - DZ
+            - AS
+            - AD
+            - AO
+            - AI
+            - AQ
+            - AG
+            - AR
+            - AM
+            - AW
+            - AU
+            - AT
+            - AZ
+            - BS
+            - BH
+            - BD
+            - BB
+            - BY
+            - BE
+            - BZ
+            - BJ
+            - BM
+            - BT
+            - BO
+            - BQ
+            - BA
+            - BW
+            - BV
+            - BR
+            - IO
+            - BN
+            - BG
+            - BF
+            - BI
+            - CV
+            - KH
+            - CM
+            - CA
+            - KY
+            - CF
+            - TD
+            - CL
+            - CN
+            - CX
+            - CC
+            - CO
+            - KM
+            - CD
+            - CG
+            - CK
+            - CR
+            - HR
+            - CU
+            - CW
+            - CY
+            - CZ
+            - CI
+            - DK
+            - DJ
+            - DM
+            - DO
+            - EC
+            - EG
+            - SV
+            - GQ
+            - ER
+            - EE
+            - SZ
+            - ET
+            - FK
+            - FO
+            - FJ
+            - FI
+            - FR
+            - GF
+            - PF
+            - TF
+            - GA
+            - GM
+            - GE
+            - DE
+            - GH
+            - GI
+            - GR
+            - GL
+            - GD
+            - GP
+            - GU
+            - GT
+            - GG
+            - GN
+            - GW
+            - GY
+            - HT
+            - HM
+            - VA
+            - HN
+            - HK
+            - HU
+            - IS
+            - IN
+            - ID
+            - IR
+            - IQ
+            - IE
+            - IM
+            - IL
+            - IT
+            - JM
+            - JP
+            - JE
+            - JO
+            - KZ
+            - KE
+            - KI
+            - KP
+            - KR
+            - KW
+            - KG
+            - LA
+            - LV
+            - LB
+            - LS
+            - LR
+            - LY
+            - LI
+            - LT
+            - LU
+            - MO
+            - MG
+            - MW
+            - MY
+            - MV
+            - ML
+            - MT
+            - MH
+            - MQ
+            - MR
+            - MU
+            - YT
+            - MX
+            - FM
+            - MD
+            - MC
+            - MN
+            - ME
+            - MS
+            - MA
+            - MZ
+            - MM
+            - NA
+            - NR
+            - NP
+            - NL
+            - NC
+            - NZ
+            - NI
+            - NE
+            - NG
+            - NU
+            - NF
+            - MP
+            - "NO"
+            - OM
+            - PK
+            - PW
+            - PS
+            - PA
+            - PG
+            - PY
+            - PE
+            - PH
+            - PN
+            - PL
+            - PT
+            - PR
+            - QA
+            - MK
+            - RO
+            - RU
+            - RW
+            - RE
+            - BL
+            - SH
+            - KN
+            - LC
+            - MF
+            - PM
+            - VC
+            - WS
+            - SM
+            - ST
+            - SA
+            - SN
+            - RS
+            - SC
+            - SL
+            - SG
+            - SX
+            - SK
+            - SI
+            - SB
+            - SO
+            - ZA
+            - GS
+            - SS
+            - ES
+            - LK
+            - SD
+            - SR
+            - SJ
+            - SE
+            - CH
+            - SY
+            - TW
+            - TJ
+            - TZ
+            - TH
+            - TL
+            - TG
+            - TK
+            - TO
+            - TT
+            - TN
+            - TR
+            - TM
+            - TC
+            - TV
+            - UG
+            - UA
+            - AE
+            - GB
+            - UM
+            - US
+            - UY
+            - UZ
+            - VU
+            - VE
+            - VN
+            - VG
+            - VI
+            - WF
+            - EH
+            - YE
+            - ZM
+            - ZW
+            - AX
+          example: BR
+        dateOfBirth:
+          type: string
+          example: "1998-01-01T00:00:00Z"
+      required:
+        - type
+        - kycLevel
+        - email
+        - country
+    CreateReceiversResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: re_000000000000
+      required:
+        - id
+    ReadReceiversResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: re_000000000000
+        type:
+          type: string
+          enum:
+            - individual
+            - business
+          example: individual
+        kycLevel:
+          type: string
+          enum:
+            - light
+            - standard
+          example: light
+        kycStatus:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+          example: pending
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        taxId:
+          type: string
+          example: "10210274029"
+        legalName:
+          type: string
+          example: Company Name Inc.
+        email:
+          type: string
+          example: email@example.com
+        country:
+          type: string
+          enum:
+            - AF
+            - AL
+            - DZ
+            - AS
+            - AD
+            - AO
+            - AI
+            - AQ
+            - AG
+            - AR
+            - AM
+            - AW
+            - AU
+            - AT
+            - AZ
+            - BS
+            - BH
+            - BD
+            - BB
+            - BY
+            - BE
+            - BZ
+            - BJ
+            - BM
+            - BT
+            - BO
+            - BQ
+            - BA
+            - BW
+            - BV
+            - BR
+            - IO
+            - BN
+            - BG
+            - BF
+            - BI
+            - CV
+            - KH
+            - CM
+            - CA
+            - KY
+            - CF
+            - TD
+            - CL
+            - CN
+            - CX
+            - CC
+            - CO
+            - KM
+            - CD
+            - CG
+            - CK
+            - CR
+            - HR
+            - CU
+            - CW
+            - CY
+            - CZ
+            - CI
+            - DK
+            - DJ
+            - DM
+            - DO
+            - EC
+            - EG
+            - SV
+            - GQ
+            - ER
+            - EE
+            - SZ
+            - ET
+            - FK
+            - FO
+            - FJ
+            - FI
+            - FR
+            - GF
+            - PF
+            - TF
+            - GA
+            - GM
+            - GE
+            - DE
+            - GH
+            - GI
+            - GR
+            - GL
+            - GD
+            - GP
+            - GU
+            - GT
+            - GG
+            - GN
+            - GW
+            - GY
+            - HT
+            - HM
+            - VA
+            - HN
+            - HK
+            - HU
+            - IS
+            - IN
+            - ID
+            - IR
+            - IQ
+            - IE
+            - IM
+            - IL
+            - IT
+            - JM
+            - JP
+            - JE
+            - JO
+            - KZ
+            - KE
+            - KI
+            - KP
+            - KR
+            - KW
+            - KG
+            - LA
+            - LV
+            - LB
+            - LS
+            - LR
+            - LY
+            - LI
+            - LT
+            - LU
+            - MO
+            - MG
+            - MW
+            - MY
+            - MV
+            - ML
+            - MT
+            - MH
+            - MQ
+            - MR
+            - MU
+            - YT
+            - MX
+            - FM
+            - MD
+            - MC
+            - MN
+            - ME
+            - MS
+            - MA
+            - MZ
+            - MM
+            - NA
+            - NR
+            - NP
+            - NL
+            - NC
+            - NZ
+            - NI
+            - NE
+            - NG
+            - NU
+            - NF
+            - MP
+            - "NO"
+            - OM
+            - PK
+            - PW
+            - PS
+            - PA
+            - PG
+            - PY
+            - PE
+            - PH
+            - PN
+            - PL
+            - PT
+            - PR
+            - QA
+            - MK
+            - RO
+            - RU
+            - RW
+            - RE
+            - BL
+            - SH
+            - KN
+            - LC
+            - MF
+            - PM
+            - VC
+            - WS
+            - SM
+            - ST
+            - SA
+            - SN
+            - RS
+            - SC
+            - SL
+            - SG
+            - SX
+            - SK
+            - SI
+            - SB
+            - SO
+            - ZA
+            - GS
+            - SS
+            - ES
+            - LK
+            - SD
+            - SR
+            - SJ
+            - SE
+            - CH
+            - SY
+            - TW
+            - TJ
+            - TZ
+            - TH
+            - TL
+            - TG
+            - TK
+            - TO
+            - TT
+            - TN
+            - TR
+            - TM
+            - TC
+            - TV
+            - UG
+            - UA
+            - AE
+            - GB
+            - UM
+            - US
+            - UY
+            - UZ
+            - VU
+            - VE
+            - VN
+            - VG
+            - VI
+            - WF
+            - EH
+            - YE
+            - ZM
+            - ZW
+            - AX
+          example: BR
+        dateOfBirth:
+          type: string
+          example: "1998-01-01T00:00:00Z"
+      required:
+        - id
+        - type
+        - kycLevel
+        - kycStatus
+        - email
+        - country
+    RegisterWalletsDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6855a280-0723-43ec-8ce4-690cc7945613
+        name:
+          type: string
+          example: Wallet Name
+      required:
+        - id
+        - name
+    RegisterWalletsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6855a280-0723-43ec-8ce4-690cc7945613
+      required:
+        - id
+    ReadAllWalletsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6855a280-0723-43ec-8ce4-690cc7945613
+        name:
+          type: string
+          example: Wallet Name
+      required:
+        - id
+        - name
+    CreateBankAccountsDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bank Account Name
+        type:
+          type: string
+          example: pix
+          enum:
+            - pix
+        pixKey:
+          type: string
+          example: "14947677768"
+      required:
+        - name
+        - type
+    CreateBankAccountsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ba_000000000000
+      required:
+        - id
+    ReadAllBankAccountsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ba_000000000000
+        name:
+          type: string
+          example: Bank Account Name
+        type:
+          type: string
+          example: pix
+          enum:
+            - pix
+        pixKey:
+          type: string
+          example: "14947677768"
+      required:
+        - id
+        - name
+        - type
