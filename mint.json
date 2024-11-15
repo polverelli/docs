@@ -96,7 +96,7 @@
         "essentials/wallets",
         "essentials/contracts",
         "essentials/transactions",
-        "essentials/webhook"
+        "essentials/webhooks"
       ]
     },
     {
