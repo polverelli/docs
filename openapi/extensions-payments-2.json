@@ -326,8 +326,8 @@
           },
           "paymentMethod": {
             "type": "string",
-            "example": "PIX",
-            "enum": ["PIX"],
+            "example": "pix",
+            "enum": ["ach", "wire", "pix"],
             "description": "Payment method"
           },
           "amount": {
@@ -344,22 +344,6 @@
           }
         },
         "required": ["type", "paymentMethod", "amount", "token"]
-      },
-      "ContractDto": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "example": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-            "description": "Contract address on the blockchain"
-          },
-          "amount": {
-            "type": "string",
-            "example": "1000",
-            "description": "100 represents 1.00, 1000 represents 10.00"
-          }
-        },
-        "required": ["address", "amount"]
       },
       "CreateQuotesResponseDto": {
         "type": "object",
@@ -404,19 +388,6 @@
             "type": "number",
             "example": 50,
             "description": "0.50 USDC"
-          },
-          "contract": {
-            "example": {
-              "address": "0x5E74A480F330705640ED07E870F893e72238c8d0",
-              "amount": "10000000000000000000",
-              "network": { "name": "Base", "chainId": 84532 },
-              "token": {
-                "name": "USDC",
-                "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
-              }
-            },
-            "description": "Details of the contract for the quote",
-            "allOf": [{ "$ref": "#/components/schemas/ContractDto" }]
           }
         },
         "required": [
@@ -457,11 +428,16 @@
           },
           "pixCode": {
             "type": "string",
-            "description": "PIX code for the payin",
+            "description": "Pix code for the payin",
+            "example": "12345678"
+          },
+          "memoCode": {
+            "type": "string",
+            "description": "Memo code for the payin",
             "example": "12345678"
           }
         },
-        "required": ["id", "status", "pixCode"]
+        "required": ["id", "status", "pixCode", "memoCode"]
       },
       "ReadAllPayinsResponseDto": {
         "type": "object",
@@ -479,11 +455,16 @@
           },
           "pixCode": {
             "type": "string",
-            "description": "PIX code for the payin",
+            "description": "Pix code for the payin",
+            "example": "12345678"
+          },
+          "memoCode": {
+            "type": "string",
+            "description": "Memo code for the payin",
             "example": "12345678"
           }
         },
-        "required": ["id", "status", "pixCode"]
+        "required": ["id", "status", "pixCode", "memoCode"]
       },
       "CreatePayoutsDto": {
         "type": "object",
@@ -1220,15 +1201,68 @@
           },
           "type": {
             "type": "string",
-            "example": "PIX",
-            "enum": ["PIX"],
+            "example": "pix",
+            "enum": ["ach", "wire", "pix", "spei", "ach_cop", "transfers"],
             "description": "Type of bank account"
           },
           "pixKey": {
             "type": "string",
             "example": "14947677768",
-            "description": "PIX key identifier"
-          }
+            "description": "pix key identifier"
+          },
+          "beneficiaryName": {
+            "type": "string",
+            "example": "Individual full name or business name"
+          },
+          "routingNumber": { "type": "string", "example": "012345678" },
+          "accountNumber": { "type": "string", "example": "1001001234" },
+          "accountType": { "type": "string", "enum": ["checking", "saving"] },
+          "accountClass": {
+            "type": "string",
+            "enum": ["individual", "business"]
+          },
+          "addressLine1": { "type": "string", "example": "Address line 1" },
+          "addressLine2": { "type": "string", "example": "Address line 2" },
+          "city": { "type": "string", "example": "City" },
+          "stateProvinceRegion": {
+            "type": "string",
+            "example": "State/Province/Region"
+          },
+          "country": {
+            "type": "string",
+            "enum": ["BR", "US", "MX", "CO", "AR"]
+          },
+          "postalCode": { "type": "string", "example": "Postal code" },
+          "speiProtocol": {
+            "type": "string",
+            "enum": ["clabe", "debitcard", "phonenum"]
+          },
+          "speiInstitutionCode": { "type": "string", "example": "40002" },
+          "speiClabe": { "type": "string", "example": "5482347403740546" },
+          "transfersType": {
+            "type": "string",
+            "enum": ["CVU", "CBU", "ALIAS"]
+          },
+          "transfersAccount": { "type": "string", "example": "BM123123123123" },
+          "achCopBeneficiaryFirstName": {
+            "type": "string",
+            "example": "Fernando"
+          },
+          "achCopBeneficiaryLastName": {
+            "type": "string",
+            "example": "Guzman Alarcón"
+          },
+          "achCopDocumentId": { "type": "string", "example": "1661105408" },
+          "achCopDocumentType": {
+            "type": "string",
+            "enum": ["CC", "CE", "NIT", "PASS", "PEP"]
+          },
+          "achCopEmail": {
+            "type": "string",
+            "example": "fernando.guzman@gmail.com"
+          },
+          "achCopBankCode": { "type": "string", "example": "051" },
+          "achCopBankAccount": { "type": "string", "example": "12345678" }
         },
         "required": ["name", "type"]
       },
@@ -1258,15 +1292,68 @@
           },
           "type": {
             "type": "string",
-            "example": "PIX",
-            "enum": ["PIX"],
+            "example": "pix",
+            "enum": ["ach", "wire", "pix", "spei", "ach_cop", "transfers"],
             "description": "Type of bank account"
           },
           "pixKey": {
             "type": "string",
             "example": "14947677768",
-            "description": "PIX key identifier"
-          }
+            "description": "Pix code identifier"
+          },
+          "beneficiaryName": {
+            "type": "string",
+            "example": "Individual full name or business name"
+          },
+          "routingNumber": { "type": "string", "example": "012345678" },
+          "accountNumber": { "type": "string", "example": "1001001234" },
+          "accountType": { "type": "string", "enum": ["checking", "saving"] },
+          "accountClass": {
+            "type": "string",
+            "enum": ["individual", "business"]
+          },
+          "addressLine1": { "type": "string", "example": "Address line 1" },
+          "addressLine2": { "type": "string", "example": "Address line 2" },
+          "city": { "type": "string", "example": "City" },
+          "stateProvinceRegion": {
+            "type": "string",
+            "example": "State/Province/Region"
+          },
+          "country": {
+            "type": "string",
+            "enum": ["BR", "US", "MX", "CO", "AR"]
+          },
+          "postalCode": { "type": "string", "example": "Postal code" },
+          "speiProtocol": {
+            "type": "string",
+            "enum": ["clabe", "debitcard", "phonenum"]
+          },
+          "speiInstitutionCode": { "type": "string", "example": "40002" },
+          "speiClabe": { "type": "string", "example": "5482347403740546" },
+          "transfersType": {
+            "type": "string",
+            "enum": ["CVU", "CBU", "ALIAS"]
+          },
+          "transfersAccount": { "type": "string", "example": "BM123123123123" },
+          "achCopBeneficiaryFirstName": {
+            "type": "string",
+            "example": "Fernando"
+          },
+          "achCopBeneficiaryLastName": {
+            "type": "string",
+            "example": "Guzman Alarcón"
+          },
+          "achCopDocumentId": { "type": "string", "example": "1661105408" },
+          "achCopDocumentType": {
+            "type": "string",
+            "enum": ["CC", "CE", "NIT", "PASS", "PEP"]
+          },
+          "achCopEmail": {
+            "type": "string",
+            "example": "fernando.guzman@gmail.com"
+          },
+          "achCopBankCode": { "type": "string", "example": "051" },
+          "achCopBankAccount": { "type": "string", "example": "12345678" }
         },
         "required": ["id", "name", "type"]
       }
