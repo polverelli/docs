@@ -16,12 +16,12 @@
   },
   "colors": {
     "primary": "#6E05FF",
-    "light": "#8C38FF",
-    "dark": "#5900D4",
+    "light": "#6E05FF",
+    "dark": "#030712",
     "background": {
-      "dark": "#111111"
+      "dark": "#030712"
     },
-    "anchors": "#5900D4"
+    "anchors": "#6E05FF"
   },
   "feedback": {
     "thumbsRating": true
@@ -34,6 +34,9 @@
       "projectToken": "87f5c334d0c77d5e7585a110f542f9ed"
     }
   },
+  "modeToggle": {
+    "default": "light"
+  },
   "topbarLinks": [
     {
       "name": "Support",
@@ -41,7 +44,7 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
+    "name": "Start now",
     "url": "https://dashboard.lumx.io"
   },
   "tabs": [
@@ -60,19 +63,19 @@
   ],
   "anchors": [
     {
-      "name": "Join our Slack",
-      "icon": "slack",
-      "url": "https://join.slack.com/t/lumxprotocol/shared_invite/zt-2r5c6zxk3-5QGGZ3mUtLel5te1dIG4Mg"
+      "name": "Dashboard",
+      "icon": "rocket",
+      "url": "https://dashboard.lumx.io"
     },
     {
       "name": "System Status",
-      "icon": "rocket",
+      "icon": "signal",
       "url": "https://status.lumx.io"
     },
     {
-      "name": "Github",
-      "icon": "Github",
-      "url": "https://github.com/lumx-protocol"
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://join.slack.com/t/lumxprotocol/shared_invite/zt-2r5c6zxk3-5QGGZ3mUtLel5te1dIG4Mg"
     }
   ],
   "navigation": [
@@ -83,8 +86,7 @@
         "get-started/authentication",
         "get-started/environments",
         "get-started/blockchains",
-        "get-started/troubleshooting",
-        "get-started/changelog"
+        "get-started/troubleshooting"
       ]
     },
     {
@@ -162,10 +164,7 @@
       "pages": [
         {
           "group": "Quotes",
-          "pages": [
-            "extensions/payments/quotes/create-a-payin-quote",
-            "extensions/payments/quotes/create-a-payout-quote"
-          ]
+          "pages": ["extensions/payments/quotes/create-a-quote"]
         },
         {
           "group": "Payins",

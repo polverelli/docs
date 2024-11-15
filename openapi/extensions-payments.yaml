@@ -1,16 +1,22 @@
 ---
-openapi: 3.0.0
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Lumx Extensions Payments
+  description: Lumx Extensions Payments API
+servers:
+  - url: https://extensions-sandbox.lumx.io/payments
 paths:
-  "/quotes/payins":
+  "/quotes":
     post:
-      operationId: QuotesController_createPayins
+      operationId: QuotesController_create
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/CreateQuotesPayinsDto"
+              "$ref": "#/components/schemas/CreateQuotesDto"
       responses:
         "201":
           description: ""
@@ -20,29 +26,7 @@ paths:
                 "$ref": "#/components/schemas/CreateQuotesResponseDto"
       security:
         - bearer: []
-      summary: Create a payin quote
-      tags:
-        - Quotes
-  "/quotes/payouts":
-    post:
-      operationId: QuotesController_createPayouts
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/CreateQuotesPayoutsDto"
-      responses:
-        "201":
-          description: ""
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/CreateQuotesResponseDto"
-      security:
-        - bearer: []
-      summary: Create a payout quote
+      summary: Create a quote
       tags:
         - Quotes
   "/payins":
@@ -65,6 +49,23 @@ paths:
       security:
         - bearer: []
       summary: Create a payin
+      tags:
+        - Payins
+    get:
+      operationId: PayinsController_readAllBankAccounts
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ReadAllPayinsResponseDto"
+      security:
+        - bearer: []
+      summary: Read all bank accounts
       tags:
         - Payins
   "/payouts":
@@ -226,13 +227,6 @@ paths:
       summary: Read all bank accounts
       tags:
         - Receivers
-info:
-  title: Extensions Payment API
-  description: The Extensions Payment API description
-  version: "1.0"
-  contact: {}
-tags: []
-servers: []
 components:
   securitySchemes:
     bearer:
@@ -240,46 +234,60 @@ components:
       bearerFormat: JWT
       type: http
   schemas:
-    CreateQuotesPayinsDto:
+    CreateQuotesDto:
       type: object
       properties:
-        walletId:
+        type:
+          type: string
+          example: payin
+          enum:
+            - payin
+            - payout
+          description: Type of quote to create
+        blockchainAccountId:
           type: string
           example: ba_000000000000
+          description: Blockchain account identifier
+        bankAccountId:
+          type: string
+          example: ba_000000000000
+          description: Bank account identifier
+        paymentMethod:
+          type: string
+          example: PIX
+          enum:
+            - PIX
+          description: Payment method
         amount:
           type: number
           minimum: 100
           example: 1000
-        network:
-          type: string
-          example: Base
-          enum:
-            - Base
-            - Arbitrum
-            - Polygon
-            - Ethereum
+          description: 100 represents 1.00, 1000 represents 10.00
         token:
           type: string
           example: USDC
           enum:
             - USDC
             - USDX
+          description: Token type for the transaction
       required:
-        - walletId
+        - type
+        - paymentMethod
         - amount
-        - network
         - token
     ContractDto:
       type: object
       properties:
-        Address:
+        address:
           type: string
           example: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+          description: Contract address on the blockchain
         amount:
           type: string
-          example: "1000000000000000000"
+          example: "1000"
+          description: 100 represents 1.00, 1000 represents 10.00
       required:
-        - Address
+        - address
         - amount
     CreateQuotesResponseDto:
       type: object
@@ -287,24 +295,38 @@ components:
         id:
           type: string
           example: qu_000000000000
+          description: Quote identifier
+        type:
+          type: string
+          example: Payin
+          enum:
+            - Payin
+            - Payout
+          description: Type of quote
         expiresAt:
           type: number
           example: 1712958191
+          description: Unix timestamp when the quote expires
         commercialQuotation:
           type: number
-          example: 495
-        lumxQuotation:
+          example: 595
+          description: 1 USD = 5.95 BRL
+        providerQuotation:
           type: number
-          example: 485
+          example: 585
+          description: 1 USD = 5.85 BRL (commercial quotation - provider taxes)
         receiverAmount:
           type: number
           example: 5240
+          description: 52.40 BRL
         senderAmount:
           type: number
           example: 1010
+          description: 10.10 USDC needs to be sent to bank account blockchain address
         flatFee:
           type: number
           example: 50
+          description: 0.50 USDC
         contract:
           example:
             address: "0x5E74A480F330705640ED07E870F893e72238c8d0"
@@ -315,52 +337,25 @@ components:
             token:
               name: USDC
               address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+          description: Details of the contract for the quote
           allOf:
             - "$ref": "#/components/schemas/ContractDto"
       required:
         - id
+        - type
         - expiresAt
         - commercialQuotation
-        - lumxQuotation
+        - providerQuotation
         - receiverAmount
         - senderAmount
         - flatFee
-        - contract
-    CreateQuotesPayoutsDto:
-      type: object
-      properties:
-        bankAccountId:
-          type: string
-          example: ba_000000000000
-        amount:
-          type: number
-          minimum: 100
-          example: 1000
-        network:
-          type: string
-          example: Base
-          enum:
-            - Base
-            - Arbitrum
-            - Polygon
-            - Ethereum
-        token:
-          type: string
-          example: USDC
-          enum:
-            - USDC
-            - USDX
-      required:
-        - bankAccountId
-        - amount
-        - network
-        - token
     CreatePayinsDto:
       type: object
       properties:
         quoteId:
           type: string
-          example: qu_000000000000
+          description: Unique identifier for the quote
+          example: pa_000000000000
       required:
         - quoteId
     CreatePayinsResponseDto:
@@ -368,6 +363,7 @@ components:
       properties:
         id:
           type: string
+          description: Unique identifier for the payin
           example: pa_000000000000
         status:
           type: string
@@ -376,9 +372,35 @@ components:
             - failed
             - refunded
             - completed
+          description: Current status of the payin
           example: processing
         pixCode:
           type: string
+          description: PIX code for the payin
+          example: "12345678"
+      required:
+        - id
+        - status
+        - pixCode
+    ReadAllPayinsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the payin
+          example: pa_000000000000
+        status:
+          type: string
+          enum:
+            - processing
+            - failed
+            - refunded
+            - completed
+          description: Current status of the payin
+          example: processing
+        pixCode:
+          type: string
+          description: PIX code for the payin
           example: "12345678"
       required:
         - id
@@ -390,12 +412,12 @@ components:
         quoteId:
           type: string
           example: qu_000000000000
-        senderWalletAddress:
+        walletId:
           type: string
           example: "0x176F54c87492c5C38B2c9Ca5b8ea50e71bA8E5C8"
       required:
         - quoteId
-        - senderWalletAddress
+        - walletId
     CreatePayoutsResponseDto:
       type: object
       properties:
@@ -410,13 +432,13 @@ components:
             - refunded
             - completed
           example: processing
-        senderWalletAddress:
+        walletId:
           type: string
           example: 0x123...890
       required:
         - id
         - status
-        - senderWalletAddress
+        - walletId
     CreateReceiversDto:
       type: object
       properties:
@@ -426,27 +448,28 @@ components:
             - individual
             - business
           example: individual
+          description:
+            Type of receiver - either an individual person or a business
+            entity
         kycLevel:
           type: string
           enum:
             - light
             - standard
           example: light
+          description: KYC verification level required for the receiver
         firstName:
           type: string
           example: John
+          description: First name of the individual receiver
         lastName:
           type: string
           example: Doe
-        taxId:
-          type: string
-          example: "10210274029"
-        legalName:
-          type: string
-          example: Company Name Inc.
+          description: Last name of the individual receiver
         email:
           type: string
           example: email@example.com
+          description: Email address of the receiver
         country:
           type: string
           enum:
@@ -700,9 +723,24 @@ components:
             - ZW
             - AX
           example: BR
+          description: Two-letter ISO country code of the receiver
+        taxId:
+          type: string
+          example: "10210274029"
+          description: Tax identification number of the receiver
+        legalName:
+          type: string
+          example: Company Name Inc.
+          description: Legal business name of the receiver
+        dateOfFoundation:
+          type: string
+          example: "1998-01-01T00:00:00Z"
+          description: Date when the business was founded
         dateOfBirth:
           type: string
           example: "1998-01-01T00:00:00Z"
+          description: Date of birth for individual receivers
+          nullable: true
       required:
         - type
         - kycLevel
@@ -714,6 +752,7 @@ components:
         id:
           type: string
           example: re_000000000000
+          description: Unique identifier of the receiver
       required:
         - id
     ReadReceiversResponseDto:
@@ -722,18 +761,16 @@ components:
         id:
           type: string
           example: re_000000000000
+          description: Unique identifier of the receiver
         type:
           type: string
           enum:
             - individual
             - business
           example: individual
-        kycLevel:
-          type: string
-          enum:
-            - light
-            - standard
-          example: light
+          description:
+            Type of receiver - either an individual person or a business
+            entity
         kycStatus:
           type: string
           enum:
@@ -741,21 +778,19 @@ components:
             - approved
             - rejected
           example: pending
+          description: Current status of the KYC verification process
         firstName:
           type: string
           example: John
+          description: First name of the individual receiver
         lastName:
           type: string
           example: Doe
-        taxId:
-          type: string
-          example: "10210274029"
-        legalName:
-          type: string
-          example: Company Name Inc.
+          description: Last name of the individual receiver
         email:
           type: string
           example: email@example.com
+          description: Email address of the receiver
         country:
           type: string
           enum:
@@ -1009,34 +1044,54 @@ components:
             - ZW
             - AX
           example: BR
+          description: Two-letter ISO country code of the receiver
+        taxId:
+          type: string
+          example: "10210274029"
+          description: Tax identification number of the receiver
+        legalName:
+          type: string
+          example: Company Name Inc.
+          description: Legal business name of the receiver
+        dateOfFoundation:
+          type: string
+          example: "1998-01-01T00:00:00Z"
+          description: Date when the business was founded
         dateOfBirth:
           type: string
           example: "1998-01-01T00:00:00Z"
+          description: Date of birth for individual receivers
       required:
         - id
         - type
-        - kycLevel
         - kycStatus
         - email
         - country
     RegisterWalletsDto:
       type: object
       properties:
-        id:
-          type: string
-          example: 6855a280-0723-43ec-8ce4-690cc7945613
         name:
           type: string
-          example: Wallet Name
+          description: Display name for the wallet
+          example: Default Wallet
+          minLength: 1
+          maxLength: 100
+        walletId:
+          type: string
+          description: Wallet identifier
+          example: 5c707e6e-aed4-4cd7-9aa2-ffbb8307629d
+          format: string
       required:
-        - id
         - name
+        - walletId
     RegisterWalletsResponseDto:
       type: object
       properties:
         id:
           type: string
-          example: 6855a280-0723-43ec-8ce4-690cc7945613
+          description: Blockchain account identifier
+          example: wa_000000000000
+          format: string
       required:
         - id
     ReadAllWalletsResponseDto:
@@ -1044,27 +1099,54 @@ components:
       properties:
         id:
           type: string
-          example: 6855a280-0723-43ec-8ce4-690cc7945613
+          description: Blockchain account identifier
+          example: wa_000000000000
+          format: string
         name:
           type: string
-          example: Wallet Name
+          description: Display name of the wallet
+          example: Default Wallet
+          minLength: 1
+          maxLength: 100
+        network:
+          type: number
+          description: Blockchain network
+          example: Base
+          enum:
+            - mainnet: ethereum
+              testnet: sepolia
+            - mainnet: base
+              testnet: base_sepolia
+            - mainnet: arbitrum
+              testnet: arbitrum_sepolia
+            - mainnet: polygon
+              testnet: polygon
+        address:
+          type: string
+          description: Wallet public address
+          example: "0x5E74A480F330705640ED07E870F893e72238c8d0"
       required:
         - id
         - name
+        - network
+        - address
     CreateBankAccountsDto:
       type: object
       properties:
         name:
           type: string
-          example: Bank Account Name
+          example: Default Account
+          description: Display name for the bank account
         type:
           type: string
-          example: pix
+          example: PIX
           enum:
-            - pix
+            - PIX
+          description: Type of bank account
         pixKey:
           type: string
           example: "14947677768"
+          description: PIX key identifier
       required:
         - name
         - type
@@ -1074,6 +1156,7 @@ components:
         id:
           type: string
           example: ba_000000000000
+          description: Unique identifier for the bank account
       required:
         - id
     ReadAllBankAccountsResponseDto:
@@ -1082,17 +1165,21 @@ components:
         id:
           type: string
           example: ba_000000000000
+          description: Unique identifier for the bank account
         name:
           type: string
-          example: Bank Account Name
+          example: Default Account
+          description: Display name for the bank account
         type:
           type: string
-          example: pix
+          example: PIX
           enum:
-            - pix
+            - PIX
+          description: Type of bank account
         pixKey:
           type: string
           example: "14947677768"
+          description: PIX key identifier
       required:
         - id
         - name
